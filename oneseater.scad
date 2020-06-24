@@ -364,4 +364,4 @@ module test_component(){
     rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
 }
 
-test_component();
+fr_4a();
