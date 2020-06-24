@@ -8,7 +8,7 @@ module rod(width, length, thickness){
     inner_width = width-(thickness*2);
     difference() {
         cube([ width, width, length ]);
-        translate([ 2, 2, -1 ])
+        translate([ thickness, thickness, -1 ])
             cube([ inner_width, inner_width, length + 2 ]);
     }
 }
@@ -47,14 +47,14 @@ module rod_component(width, length, thickness, holes, color) {
 
     if (annotate){
         color("black"){
-            translate([28, 0, 0]){
+            translate([width+3, 0, 0]){
                 rotate([90,0,0]){
                     square([1,length]);
                     translate([2,length/2,0])
                         text(str(length), size=6);    
                 }
             
-                translate([0, 28, 0]){
+                translate([0, width+3, 0]){
                     rotate([90,0,90]){
                         square([1,length]);
                         translate([2,length/2,0])
@@ -70,8 +70,8 @@ module rod_component(width, length, thickness, holes, color) {
                     rot_x = 90;
                     rot_y = 0;
                     rot_z = (front) ? 0 : 90;
-                    trans_y = (front) ? 0 : 12.5;
-                    trans_x = (front) ? -16 : 0;
+                    trans_y = (front) ? 0 : width/2;
+                    trans_x = (front) ? -((width/2)+3.5) : 0;
                     translate([trans_x, trans_y, 0]){
                             rotate([ rot_x, rot_y, rot_z ]){
                                 translate([0, 0, 0]){
@@ -252,4 +252,4 @@ module frame() {
 }
 
 frame();
-// fr_2a();
+// fr_2c();
