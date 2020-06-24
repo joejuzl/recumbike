@@ -1,8 +1,8 @@
 // Settings
 annotate=true;
-text_size=4;
+text_size=3;
 text_color="black";
-line_color="grey";
+line_color="darkgrey";
 $fa = 1;
 $fs = 0.4;
 
@@ -29,6 +29,116 @@ module hole(front, depth, diameter, x, y) {
                 cylinder(depth+2, diameter / 2, diameter / 2);
 }
 
+module annotate_rod(width, depth, length) {
+    // front
+    // length
+    rotate([90,0,0]){
+        translate([width+3, 0, 0]){
+            color(line_color) square([1,length]);
+            translate([2,length/2,0])
+                color(text_color) text(str(length), size=text_size);    
+        }
+    }
+    // width
+    rotate([90,90,0]){
+        translate([-(length+3), 0, 0]){
+            color(line_color) square([1,width]);
+            translate([-8,width/2,0])
+                color(text_color) text(str(width), size=text_size);    
+        }
+    }
+    // side
+    // length
+    rotate([90,0,-90]){
+        translate([-(depth+3), 0, 0]){
+            color(line_color) square([1,length]);
+            translate([-8,length/2,0])
+                color(text_color) text(str(length), size=text_size);    
+        }
+    }
+    // depth
+    rotate([0,-90,0]){
+        translate([length+2, 0, 0]){
+            color(line_color) square([1,depth]);
+            translate([2,depth/2,0])
+                color(text_color) text(str(depth), size=text_size);    
+        }
+    }
+}
+
+module annotate_hole(front, from_start, x, y, rod_length, rod_width, rod_depth) {
+    // front
+    if (front) {
+        // length
+        rotate([ 90, 0, 0 ]){
+            if (y < rod_length/2){
+                translate([x-0.5,0,0]){
+                    color(line_color) square([1,y]);
+                    translate([-9,y/2,0])
+                        color(text_color) text(str(y), size=text_size);
+                }
+            } else {
+                translate([x-0.5,y,0]){
+                    color(line_color) square([1,rod_length-y]);
+                    translate([-9,(rod_length-y)/2,0])
+                        color(text_color) text(str(rod_length-y), size=text_size);
+                }
+            }
+        }
+        // width
+        rotate([ 90, 90, 0 ]){
+            if (x < rod_width/2){
+                translate([-y,0,0]){
+                    color(line_color) square([1,x]);
+                    translate([1,x/2,0])
+                        color(text_color) text(str(x), size=text_size);
+                }
+            } else {
+                translate([-y,x,0]){
+                    color(line_color) square([1,rod_width-x]);
+                    translate([1,(rod_width-x)/2,0])
+                        color(text_color) text(str(rod_width-x), size=text_size);
+                }
+            }
+        }
+    // side
+    } else {
+        // length
+        rotate([ 90, 0, -90 ]){
+            if (y < rod_length/2){
+                translate([-x,0,0]){
+                    color(line_color) square([1,y]);
+                    translate([-9,y/2,0])
+                        color(text_color) text(str(y), size=text_size);
+                }
+            } else {
+                translate([-x,y,0]){
+                    color(line_color) square([1,rod_length-y]);
+                    translate([-9,(rod_length-y)/2,0])
+                        color(text_color) text(str(rod_length-y), size=text_size);
+                }
+            }
+        }
+        // width
+        rotate([ 0, -90, 0 ]){
+            if (x < rod_depth/2){
+            
+                translate([y,0,0]){
+                    color(line_color) square([1,x]);
+                    translate([2,x/2,0])
+                        color(text_color) text(str(x), size=text_size);
+                }
+            } else {
+                translate([y,x,0]){
+                    color(line_color) square([1,rod_depth-x]);
+                    translate([1,(rod_depth-x)/2,0])
+                        color(text_color) text(str(rod_depth-x), size=text_size);
+                }
+            }
+        }
+    }
+}
+
 module rod_component(width, depth, length, thickness, holes, color) {
     difference() {
         color(color)
@@ -46,72 +156,16 @@ module rod_component(width, depth, length, thickness, holes, color) {
     }
 
     if (annotate){
-        // front
-        // length
-        translate([width+3, 0, 0]){
-            rotate([90,0,0]){
-                color(line_color) square([1,length]);
-                translate([2,length/2,0])
-                    color(text_color) text(str(length), size=text_size);    
-            }
-        }
-        // width
-        translate([0, 0, length+3]){
-            rotate([90,90,0]){
-                color(line_color) square([1,width]);
-                translate([-9,width/2,0])
-                    color(text_color) text(str(width), size=text_size);    
-            }
-        }
-        // side
-        // length
-        translate([width+3, depth+3, 0]){
-            rotate([90,0,90]){
-                color(line_color) square([1,length]);
-                translate([2,length/2,0])
-                    color(text_color) text(str(length), size=text_size);    
-            }
-        }
-        // depth
-        translate([width+3, 0, length+3]){
-            rotate([0,90,0]){
-                color(line_color) square([1,depth]);
-                translate([-9,depth/2,0])
-                    color(text_color) text(str(depth), size=text_size);    
-            }
-        }
+        annotate_rod(width, depth, length);
 
         for (i=[0:len(holes)-1]){
             hole = holes[i];
+            front = hole[0];
+            from_start = hole[4];
             hole_x = hole[2];
             hole_y = hole[3];
-            from_start = hole[4];
-            front = hole[0];
-            rot_x = 90;
-            rot_y = 0;
-            rot_z = (front) ? 0 : 90;
-            trans_y = (front) ? 0 : (hole_x-0.5);
-            trans_x = (front) ? hole_x : width+3;
-            translate([trans_x, trans_y, 0]){
-                    rotate([ rot_x, rot_y, rot_z ]){
-                        translate([0, 0, 0]){
-                            if(from_start){
-                                color(line_color) square([1,hole_y]);
-                                translate([-9,hole_y/2,0])
-                                    color(text_color) text(str(hole_y), size=text_size);
-                            } 
-                            else {
-                                translate([0,length-(hole_y),0]){
-                                    color(line_color) square([1,hole_y]);
-                                    translate([-9,hole_y/2,0])
-                                        color(text_color) text(str(hole_y), size=text_size);
-                                }
-                            }
-                            
-                        }
-                    }
-                }
-            
+            hole_y_norm = (from_start) ? hole_y : length-hole_y;
+            annotate_hole(front, from_start, hole_x, hole_y_norm, length, width, depth);
         }
     }
 }
