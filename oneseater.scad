@@ -1,25 +1,28 @@
+// Settings
 annotate=false;
 $fa = 1;
 $fs = 0.4;
+
 // Building blocks
-module rod_25(length){
+module rod(width, length, thickness){
+    inner_width = width-(thickness*2);
     difference() {
-        cube([ 25, 25, length ]);
+        cube([ width, width, length ]);
         translate([ 2, 2, -1 ])
-            cube([ 21, 21, length + 2 ]);
+            cube([ inner_width, inner_width, length + 2 ]);
     }
 }
 
-module hole25(front, diameter, x, z) {
+module hole(front, rod_width, diameter, x, y) {
     rot_x = (front) ? 90 : 0;
     rot_y = (front) ? 0 : -90;
-    trans_x = (front) ? x : z;
-    trans_y = (front) ? z : x;
-    trans_z = -26;
+    trans_x = (front) ? x : y;
+    trans_y = (front) ? y : x;
+    trans_z = -(rod_width+1);
     color("black")
         rotate([ rot_x, rot_y, 0 ])
             translate([ trans_x, trans_y, trans_z ])
-                cylinder(27, diameter / 2, diameter / 2);
+                cylinder(rod_width+2, diameter / 2, diameter / 2);
     
     
     if (annotate){
@@ -27,13 +30,18 @@ module hole25(front, diameter, x, z) {
     }
 }
 
-module rod_component(length, holes, color) {
+module rod_component(width, length, thickness, holes, color) {
     difference() {
         color(color)
-        rod_25(length);
-        for (hole=holes){
-            hole_distance = (hole[4]) ? hole[3] : length-hole[3];
-            hole25(hole[0], hole[1], hole[2], hole_distance);
+        rod(width, length, thickness);
+        for (hole_params=holes){
+            front = hole_params[0];
+            diameter = hole_params[1];
+            x = hole_params[2];
+            y = hole_params[3];
+            from_start = hole_params[4];
+            y_norm = (from_start) ? y : length-y;
+            hole(front, width, diameter, x, y_norm);
         }
     }
 
@@ -93,7 +101,9 @@ module rod_component(length, holes, color) {
 
 // Components
 module fr_1a() {
-    length = 1500;
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_length = 1500;
     holes = [
         [true, 6.5, 12.5, 12.5, false],
         [true, 6.5, 12.5, 47.5, false],
@@ -109,7 +119,7 @@ module fr_1a() {
         [false, 6.5, 12.5, 12.5, true],
     ];
     color = "lightgreen";
-    rod_component(length, holes, color);
+    rod_component(rod_width, rod_length, rod_thickness, holes, color);
 }
 
 module fr_1b() {
@@ -117,7 +127,9 @@ module fr_1b() {
 }
 
 module fr_2a() {
-    length = 210;
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_length = 210;
     holes = [
         [true, 6.5, 12.5, 12.5, false],
         [true, 6.5, 12.5, 12.5, true],
@@ -125,11 +137,13 @@ module fr_2a() {
         [false, 6.5, 12.5, 37.5, true],
     ];
     color = "red";
-    rod_component(length, holes, color);
+    rod_component(rod_width, rod_length, rod_thickness, holes, color);
 }
 
 module fr_2b() {
-    length = 260;
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_length = 260;
     holes = [
         [true, 6.5, 12.5, 37.5, false],
         [true, 6.5, 12.5, 95.5, false],
@@ -139,11 +153,13 @@ module fr_2b() {
         [false, 6.5, 12.5, 12.5, true],
     ];
     color = "yellow";
-    rod_component(length, holes, color);
+    rod_component(rod_width, rod_length, rod_thickness, holes, color);
 }
 
 module fr_2c() {
-    length = 210;
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_length = 210;
     holes = [
         [true, 6.5, 12.5, 12.5, false],
         [true, 6.5, 12.5, 12.5, true],
@@ -151,11 +167,13 @@ module fr_2c() {
         [false, 6.5, 12.5, 105.5, false],
     ];
     color = "orange";
-    rod_component(length, holes, color);
+    rod_component(rod_width, rod_length, rod_thickness, holes, color);
 }
 
 module fr_3a(){
-    length = 125;
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_length = 125;
     holes = [
         [true, 6.5, 12.5, 12.5, false],
         [true, 6.5, 12.5, 12.5, true],
@@ -163,17 +181,19 @@ module fr_3a(){
         [false, 6.5, 12.5, 37.5, true],
     ];
     color = "lightblue";
-    rod_component(length, holes, color);
+    rod_component(rod_width, rod_length, rod_thickness, holes, color);
 }
 
 module fr_3b() {
-    length = 125;
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_length = 125;
     holes = [
         [true, 6.5, 12.5, 12.5, false],
         [true, 6.5, 12.5, 12.5, true],
     ];
     color = "turquoise";
-    rod_component(length, holes, color);
+    rod_component(rod_width, rod_length, rod_thickness, holes, color);
 }
 
 // Parts
