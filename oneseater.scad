@@ -1,5 +1,8 @@
 // Settings
-annotate=false;
+annotate=true;
+text_size=4;
+text_color="black";
+line_color="grey";
 $fa = 1;
 $fs = 0.4;
 
@@ -24,11 +27,6 @@ module hole(front, depth, diameter, x, y) {
         rotate([ rot_x, rot_y, 0 ])
             translate([ trans_x, trans_y, trans_z ])
                 cylinder(depth+2, diameter / 2, diameter / 2);
-    
-    
-    if (annotate){
-        text("hello");
-    }
 }
 
 module rod_component(width, depth, length, thickness, holes, color) {
@@ -48,55 +46,71 @@ module rod_component(width, depth, length, thickness, holes, color) {
     }
 
     if (annotate){
-        color("black"){
-            translate([width+3, 0, 0]){
-                rotate([90,0,0]){
-                    square([1,length]);
-                    translate([2,length/2,0])
-                        text(str(length), size=6);    
-                }
-            
-                translate([0, depth+3, 0]){
-                    rotate([90,0,90]){
-                        square([1,length]);
-                        translate([2,length/2,0])
-                            text(str(length), size=6);    
-                    }
-                }
+        // front
+        // length
+        translate([width+3, 0, 0]){
+            rotate([90,0,0]){
+                color(line_color) square([1,length]);
+                translate([2,length/2,0])
+                    color(text_color) text(str(length), size=text_size);    
+            }
+        }
+        // width
+        translate([0, 0, length+3]){
+            rotate([90,90,0]){
+                color(line_color) square([1,width]);
+                translate([-9,width/2,0])
+                    color(text_color) text(str(width), size=text_size);    
+            }
+        }
+        // side
+        // length
+        translate([width+3, depth+3, 0]){
+            rotate([90,0,90]){
+                color(line_color) square([1,length]);
+                translate([2,length/2,0])
+                    color(text_color) text(str(length), size=text_size);    
+            }
+        }
+        // depth
+        translate([width+3, 0, length+3]){
+            rotate([0,90,0]){
+                color(line_color) square([1,depth]);
+                translate([-9,depth/2,0])
+                    color(text_color) text(str(depth), size=text_size);    
+            }
+        }
 
-                for (i=[0:len(holes)-1]){
-                    hole = holes[i];
-                    hole_x = hole[2];
-                    hole_y = hole[3];
-                    from_start = hole[4];
-                    front = hole[0];
-                    rot_x = 90;
-                    rot_y = 0;
-                    rot_z = (front) ? 0 : 90;
-                    trans_y = (front) ? 0 : (hole_x-0.5);
-                    trans_x = (front) ? -(width-hole_x+3.5) : 0;
-                    translate([trans_x, trans_y, 0]){
-                            rotate([ rot_x, rot_y, rot_z ]){
-                                translate([0, 0, 0]){
-                                    if(from_start){
-                                        square([1,hole_y]);
-                                        translate([-9,hole_y/2,0])
-                                            text(str(hole_y), size=6);
-                                    } 
-                                    else {
-                                        translate([0,length-(hole_y),0]){
-                                            square([1,hole_y]);
-                                            translate([-9,hole_y/2,0])
-                                                text(str(hole_y), size=6);
-                                        }
-                                    }
-                                    
+        for (i=[0:len(holes)-1]){
+            hole = holes[i];
+            hole_x = hole[2];
+            hole_y = hole[3];
+            from_start = hole[4];
+            front = hole[0];
+            rot_x = 90;
+            rot_y = 0;
+            rot_z = (front) ? 0 : 90;
+            trans_y = (front) ? 0 : (hole_x-0.5);
+            trans_x = (front) ? hole_x : width+3;
+            translate([trans_x, trans_y, 0]){
+                    rotate([ rot_x, rot_y, rot_z ]){
+                        translate([0, 0, 0]){
+                            if(from_start){
+                                color(line_color) square([1,hole_y]);
+                                translate([-9,hole_y/2,0])
+                                    color(text_color) text(str(hole_y), size=text_size);
+                            } 
+                            else {
+                                translate([0,length-(hole_y),0]){
+                                    color(line_color) square([1,hole_y]);
+                                    translate([-9,hole_y/2,0])
+                                        color(text_color) text(str(hole_y), size=text_size);
                                 }
                             }
+                            
                         }
-                    
+                    }
                 }
-            }
             
         }
     }
@@ -205,6 +219,22 @@ module fr_3b() {
     rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
 }
 
+module fr_4a() {
+    rod_thickness = 4;    
+    rod_width = 60;
+    rod_depth = 4;
+    rod_length = 210;
+    holes = [
+        [true, 6.5, 12.5, 12.5, true],
+        [true, 6.5, 60-12.5, 12.5, true],
+        [true, 6.5, 12.5, 12.5, false],
+        [true, 6.5, 60-12.5, 12.5, false],
+        [true, 12.5, 20, 105, true],
+    ];
+    color = "lightgrey";
+    rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
+}
+
 
 // Sections
 module frame() {
@@ -261,5 +291,23 @@ module frame() {
     }
 }
 
-frame();
-// fr_4a();
+// frame();
+
+
+
+module test_component(){
+    rod_thickness = 2;    
+    rod_width = 25;
+    rod_depth = 100;
+    rod_length = 125;
+    holes = [
+        [true, 10, 8, 12.5, false],
+        [true, 4, 20, 30, true],
+        [false, 12, 15, 50, false],
+        [false, 3, 80, 12, true],
+    ];
+    color = "lightblue";
+    rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
+}
+
+test_component();
