@@ -1,5 +1,5 @@
 // Settings
-annotate=true;
+annotate=false;
 text_size=3;
 text_color="black";
 line_color="darkgrey";
@@ -303,9 +303,9 @@ module frame() {
         }
     }
     translate([ -1500 + 35, 0, 0 ]) {
-        translate([ 0, -25, 0 ])
+        translate([ 0, -29, 0 ])
             fr_2a();
-        translate([ 0, 125, 0 ])
+        translate([ 0, 129, 0 ])
             fr_2a();
     }
     translate([ -1500 + 411 - 12.5, 0, -25 ]) {
@@ -343,9 +343,16 @@ module frame() {
         translate([ -1500 + 565, -50, 0 ])
             fr_3b();    
     }
+    translate([-1500,-4,0])
+        fr_4a();
+    
+    translate([-1500,125,0])
+        fr_4a();
+    
+    
 }
 
-// frame();
+frame();
 
 
 
@@ -364,4 +371,4 @@ module test_component(){
     rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
 }
 
-fr_4a();
+// test_component();
