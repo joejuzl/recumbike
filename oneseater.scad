@@ -6,6 +6,10 @@ line_color="darkgrey";
 $fa = 1;
 $fs = 0.4;
 
+// Variables
+bb_cap_outer_diameter = 33;
+bb_cap_securer_diameter = 20;
+
 // Building blocks
 module rod(width, depth, length, thickness){
     inner_width = width-(thickness*2);
@@ -289,6 +293,43 @@ module fr_4a() {
     rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
 }
 
+module fr_4b() {
+    rod_thickness = 4;    
+    rod_width = 60;
+    rod_depth = 4;
+    rod_length = 210;
+    holes = [
+        [true, 6.5, 12.5, 12.5, true],
+        [true, 6.5, 60-12.5, 12.5, true],
+        [true, 6.5, 12.5, 12.5, false],
+        [true, 6.5, 60-12.5, 12.5, false],
+        [true, bb_cap_outer_diameter, 30, 105, true],
+        [true, 6.5, 60-12.5, 87.5, true],
+        [true, 6.5, 12.5, 210-87.5, true],
+        [true, 6.5, 60-12.5, 210-87.5, true],
+        [true, 6.5, 12.5, 87.5, true],
+
+    ];
+    color = "lightgrey";
+    rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
+}
+
+module fr_4c() {
+    rod_thickness = 4;    
+    rod_width = 60;
+    rod_depth = 4;
+    rod_length = 60;
+    holes = [
+        [true, 6.5, 12.5, 12.5, true],
+        [true, 6.5, 60-12.5, 12.5, true],
+        [true, 6.5, 12.5, 12.5, false],
+        [true, 6.5, 60-12.5, 12.5, false],
+        [true, bb_cap_securer_diameter, 30, 30, true],
+    ];
+    color = "lightgrey";
+    rod_component(rod_width, rod_depth, rod_length, rod_thickness, holes, color);
+}
+
 
 // Sections
 module frame() {
@@ -349,12 +390,21 @@ module frame() {
     translate([-1500,125,0])
         fr_4a();
     
-    
+    translate([-110,25,0]){
+        fr_4b();
+        translate([0,-4,105-30])
+            fr_4c();
+    }
+    rotate([0,0,180]){
+        translate([110-60,-100,0]){
+            fr_4b();
+            translate([0,-4,105-30])
+                fr_4c();
+        }
+    }
 }
 
 frame();
-
-
 
 module test_component(){
     rod_thickness = 2;    
